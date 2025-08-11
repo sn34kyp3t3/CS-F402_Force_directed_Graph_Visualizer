@@ -99,7 +99,6 @@ class GraphEditorGUI:
         algo_frame.pack(fill=tk.X, pady=5)
         
         tk.Button(algo_frame, text="Force-Directed", command=self.run_force_directed).pack(fill=tk.X, pady=2)
-        tk.Button(algo_frame, text="Orthogonal Layout", command=self.run_orthogonal).pack(fill=tk.X, pady=2)
         
         # Instructions
         instructions_frame = tk.LabelFrame(control_frame, text="Instructions", padx=5, pady=5)
@@ -367,8 +366,8 @@ class GraphEditorGUI:
             # Import and run force-directed algorithm
             import sys
             import os
-            sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'force_directed'))
-            from force_directed.main import ForceDirectedLayout
+            sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+            from main import ForceDirectedLayout
             
             # Create a copy of the graph
             graph_copy = Graph()
@@ -392,41 +391,7 @@ class GraphEditorGUI:
         except Exception as e:
             messagebox.showerror("Error", f"Failed to run force-directed algorithm: {str(e)}")
     
-    def run_orthogonal(self):
-        """Run orthogonal layout algorithm on the current graph."""
-        if not self.graph.vertices:
-            messagebox.showwarning("Warning", "No graph to process!")
-            return
-        
-        try:
-            # Import and run orthogonal algorithm
-            import sys
-            import os
-            sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'orthogonal_bend_min'))
-            from orthogonal_bend_min.main import OrthogonalLayout
-            
-            # Create a copy of the graph
-            graph_copy = Graph()
-            for vertex in self.graph.get_all_vertices():
-                graph_copy.add_vertex(vertex.id, vertex.x, vertex.y)
-            for v1, v2 in self.graph.get_all_edges():
-                graph_copy.add_edge(v1, v2)
-            
-            # Run algorithm
-            layout = OrthogonalLayout(graph_copy)
-            coordinates = layout.optimize_layout("greedy")
-            
-            # Update our graph with the results
-            for vertex_id, (x, y) in coordinates.items():
-                if vertex_id in self.graph.vertices:
-                    self.graph.get_vertex(vertex_id).x = x
-                    self.graph.get_vertex(vertex_id).y = y
-            
-            self.redraw_graph()
-            self.status_var.set("Orthogonal layout applied")
-            
-        except Exception as e:
-            messagebox.showerror("Error", f"Failed to run orthogonal algorithm: {str(e)}")
+
 
 def main():
     """Launch the graph editor GUI."""

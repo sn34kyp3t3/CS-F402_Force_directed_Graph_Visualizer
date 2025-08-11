@@ -223,11 +223,37 @@ class ForceDirectedLayout:
         return [(v.x, v.y) for v in vertices]
 
 def main():
+    import sys
+    import os
+    
     print("Force-Directed Visualiser (Eades & Fruchterman-Reingold)")
     
-    # Create a sample graph
-    graph = create_sample_graph()
-    print(f"Created graph with {len(graph.vertices)} vertices and {len(graph.edges)} edges")
+    # Check if a JSON file was provided as argument
+    if len(sys.argv) > 1:
+        json_file_path = sys.argv[1]
+        
+        if not os.path.exists(json_file_path):
+            print(f"Error: File '{json_file_path}' not found")
+            print("Usage: python main.py [path_to_graph.json]")
+            print("If no file is provided, a sample graph will be used.")
+            return
+        
+        if not json_file_path.endswith('.json'):
+            print("Warning: File doesn't have .json extension")
+        
+        # Load graph from JSON file
+        print(f"Loading graph from: {json_file_path}")
+        try:
+            from graph_utils import parse_graph_from_file
+            graph = parse_graph_from_file(json_file_path)
+            print(f"Successfully loaded graph with {len(graph.vertices)} vertices and {len(graph.edges)} edges")
+        except Exception as e:
+            print(f"Error loading graph: {e}")
+            return
+    else:
+        # Create a sample graph
+        graph = create_sample_graph()
+        print(f"Created sample graph with {len(graph.vertices)} vertices and {len(graph.edges)} edges")
     
     # Randomize initial positions
     graph.randomize_positions(width=10, height=10)
